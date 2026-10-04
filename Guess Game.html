@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+
+    <title>Guess Game by Adam</title>
+    <meta charset = "utf-8">
+
+    <style>
+
+      body{
+        background: linear-gradient(55deg,hwb(0 2% 50%),hwb(0 80% 18%));
+        min-height:230vh;
+      }
+
+      html{
+        scroll-behavior: smooth;
+      }
+
+      
+      #Random-num{
+        border:5px solid gray;
+        width:70px;
+        height:35px;
+        background:white;
+        position:relative;
+        border-radius: 13px;
+        padding:15px;
+        position:relative;
+        left:130px;
+        bottom:60px;
+      }
+
+      .Web-name{
+        color:black;
+        border:13px solid hwb(113 38% 33%);
+        width:150px;
+        font-family: monospace;
+        font-size: 30px;
+        border-radius:14px;
+        padding:25px;
+        background:white;
+        position:relative;
+        left:25vw;
+        
+      }
+
+      #Coins,
+      #Level,
+      #Money,
+      #Energy,
+      #Win-streak{
+        border:6px solid black;
+        border-radius:14px;
+        width:90px;
+        padding:20px;
+        background:white;
+        font-family:monospace;
+      }
+
+      #Play{
+        border-radius:13px;
+        background:linear-gradient(130deg,white,deepskyblue);
+        width:100px;
+        height:80px;
+        position:relative;
+        left:50vw;
+        bottom:25vh;
+      }
+
+      .input-number{
+        border-radius: 15px;
+        width:100px;
+        height:70px;
+        position:relative;
+        bottom:5px;
+        background:linear-gradient(12deg,deepskyblue,skyblue)
+      }
+
+      .generetor{
+        width:92px;
+        height:45px;
+        background: hwb(120 44% 3%);
+        color:black;
+        border-radius:13px;
+        box-shadow: 0px 0px 0px gray;
+        position:relative;
+        bottom:240px;
+        left:90px;
+        font-family:monospace;
+      }
+
+      #Game-rules{
+        width:120px;
+        height: 60px;
+        border-radius:14px;
+        background:linear-gradient(135deg,hwb(0 31% 67%),deepskyblue);
+        font-family: monospace;
+        box-shadow:0px 0px 30px skyblue;
+      }
+
+      .buying{
+        padding:20px;
+        border-radius:13px;
+        background:white;
+        display: grid;
+        gap:10px;
+      }
+
+      #Buy-coins,
+      #Buy-energy{
+        border-radius:13px;
+        background:black;
+        color:white;
+        font-family: monospace;
+        font-weight:bold;
+        box-shadow:0px 0px 35px gray;
+        padding:20px;
+      }
+
+      
+    </style>
+    
+  </head>
+
+  <body>
+
+    <header>
+
+      <h1 class ="Web-name">Guess Game</h1>
+
+      <button id ="Game-rules">Game rules: </button>
+
+      <div class = "Player-info">
+
+        <h3 id ="Coins"></h3>
+        <h3 id ="Level"></h3>
+        <h3 id ="Money"></h3>
+        <h3 id ="Energy"></h3>
+        <h3 id="Win-streak"></h3>
+        
+      </div>
+      
+    </header>
+
+    <main id ="main">
+
+      <button id ="Play">Play</button>
+
+      <h4 id ="Random-num"></h4>
+
+      <div class = "buying">
+
+        <button id ="Buy-coins">Buy Coins(100 coins = 10 Money)</button>
+        <button id ="Buy-energy">Buy Energy (3 energy = 20 coins)</button>
+                               
+      </div>
+        
+    </main>
+
+    <footer>
+      
+    </footer>
+
+    <script>
+
+      /*variables*/
+
+
+      let Play_btn = document.getElementById("Play");
+      let _main_ = document.getElementById("main");
+      let random_num_var = document.getElementById("Random-num");
+      let game_rule_btn = document.getElementById("Game-rules");
+
+      let buy_coins_btn = document.getElementById("Buy-coins");
+      let buy_energy_btn = document.getElementById("Buy-energy");
+      
+      let random_interval;
+
+
+      
+      
+      
+      let is_playing = false;
+      let can_play = true;
+
+      
+      let level_variable = 1;
+      let money_variable = 50;
+      let coins_variable = 100;
+      let energy_variable = 20;
+      let win_streak_variable = 0;
+      
+      let Coins_text = document.getElementById("Coins");
+      let Money_text = document.getElementById("Money");
+      let Level_text = document.getElementById("Level");
+      let Energy_text = document.getElementById("Energy");
+      let Win_streak_text = document.getElementById("Win-streak");
+
+
+      /*saving*/
+
+      function SaveGame(){
+        localStorage.setItem("coins_save",coins_variable);
+        localStorage.setItem("money_save",money_variable);
+        localStorage.setItem("energy_save",energy_variable);
+        localStorage.setItem("level_save",level_variable);
+        localStorage.setItem("win_streak_save",win_streak_variable);
+      }
+
+
+      function LoadGame(){
+        let saved_coins = localStorage.getItem("coins_save");
+        let saved_money = localStorage.getItem("money_save");
+        let saved_level = localStorage.getItem("level_save");
+        let saved_energy = localStorage.getItem("energy_save");
+        let saved_win_streak = localStorage.getItem("win_streak_save");
+
+        if (saved_coins != null){
+          coins_variable = Number(saved_coins);
+        }
+
+        if (saved_money != null){
+          money_variable = Number(saved_money);
+        }
+
+        if (saved_level != null){
+          level_variable = Number(saved_level);
+        }
+
+        if (saved_energy != null){
+          energy_variable = Number(saved_energy);
+        }
+
+        if (saved_win_streak != null){
+          win_streak_variable = Number(saved_win_streak);
+        }
+      }
+
+      LoadGame()
+
+
+
+      /*Infos*/
+
+      
+      Coins_text.textContent = "🪙Coins: " +(coins_variable);
+      Money_text.textContent = "💵Money: " +(money_variable);
+      Level_text.textContent = "🎚️Level: " +(level_variable);
+      Energy_text.textContent = "⚡Energy: " +(energy_variable);
+      Win_streak_text.textContent = "🏆Win Streak: " +(win_streak_variable);
+      
+      
+      
+
+      /*functions*/
+
+      buy_coins_btn.addEventListener("click",function(){
+        if (money_variable >= 10){
+          money_variable -= 10;
+          coins_variable += 100;
+
+          Money_text.textContent = "💵Money: " + (money_variable);
+          Coins_text.textContent = "🪙Coins: " +(coins_variable);
+
+          SaveGame()
+          
+        }
+        else{
+          alert("Not enough Money")
+        }
+      });
+
+      buy_energy_btn.addEventListener("click",function(){
+        if (coins_variable >= 20){
+          coins_variable -= 20;
+          energy_variable += 3;
+
+          Energy_text.textContent = "⚡Energy: "+(energy_variable);
+          Coins_text.textContent = "🪙Coins: " +(coins_variable);
+
+          SaveGame()
+          
+        }
+        else{
+          alert("Not enough Coins")
+        }
+      });
+
+      game_rule_btn.addEventListener("click",function(){
+        alert(`
+Hello in Guess Game by Adam!
+
+Game Rules:
+
+1. Guess the random number.
+2. Win → +300 Coins and +25 Money and +1 Energy
+3. Win → Level +1.
+4. Lose → Coins and Money and Energy decrease.
+5. The higher the Level, the harder the game.
+        `);
+      });
+
+
+      Play_btn.addEventListener("click",function(){
+
+        if (can_play == true && energy_variable > 0){
+
+          can_play = false;
+          is_playing = true;
+          alert("Game Started!!");
+
+          let input_num = document.createElement("input");
+          let Generate_btn = document.createElement("button");
+        
+          Generate_btn.className = "generetor";
+        
+          input_num.className = "input-number";
+          input_num.type = "number";
+
+
+          Generate_btn.textContent = "Generate: ";
+          input_num.placeholder = "Input a number: "
+          
+          input_num.min = 1;
+          input_num.max = 10;
+
+          
+          _main_.appendChild(input_num);
+          _main_.appendChild(Generate_btn);
+
+
+          /*respawn nums*/
+
+          Generate_btn.addEventListener("click",function(){
+
+            if (input_num.value !=""){
+              
+              random_interval = setInterval(function(){
+                random_num_var.textContent = Math.floor(Math.random() * input_num.max) + 1;
+              },100);
+
+
+              setTimeout(function(){
+                clearInterval(random_interval);
+
+                if (Number(input_num.value) == Number(random_num_var.textContent)){
+
+                  let critical_chance = Math.random()
+
+                  coins_variable += 300;
+                  money_variable += 25;
+                  level_variable += 1;
+                  energy_variable += 1;
+                  win_streak_variable += 1;
+
+
+                  if (win_streak_variable == 2){
+                    coins_variable += 400;
+                    alert("Bonus:400 Coins added and 60 money added!!")
+                    SaveGame()
+                  }
+
+                  if (critical_chance < 0.9){
+                    coins_variable += 300;
+                    money_variable += 150;
+
+                    alert("you Got A luuuuuuuck!!!!")
+
+                    SaveGame()
+                  }
+        
+
+                  Coins_text.textContent = "🪙Coins: " + coins_variable;
+                  Money_text.textContent = "💵Money: " + money_variable;
+                  Level_text.textContent = "🎚️Level: " + level_variable;
+                  Energy_text.textContent = "⚡Energy: " + energy_variable;
+                  Win_streak_text.textContent = "🏆Win Streak: " + win_streak_variable;
+
+                  
+
+                  SaveGame()
+
+        
+
+                  /* max and min numbers*/
+
+                  if (level_variable >= 5 && level_variable <= 9){
+                    input_num.max = 20;
+                  }
+
+                  if (level_variable >= 10 && level_variable <= 19){
+                    input_num.max = 30;
+                  }
+
+                  if (level_variable >= 20 && level_variable <= 39){
+                    input_num.max = 80;
+                  }
+
+                  if (level_variable > 100){
+                    input_num.max = 1500;
+                  }
+                }
+
+                if (Number(input_num.value) != Number(random_num_var.textContent)){
+                  coins_variable -= 50;
+                  money_variable -= 1;
+                  energy_variable -= 1;
+                  win_streak_variable = 0;
+
+                  Coins_text.textContent = "🪙Coins: " + coins_variable;
+                  Money_text.textContent = "💵Money: " + money_variable;
+                  Energy_text.textContent = "⚡Energy: " + energy_variable;
+                  Win_streak_text.textContent = "🏆Win Streak: " + win_streak_variable;
+
+                  SaveGame()
+      
+                }
+              
+
+              },1500);
+
+            
+            }
+          });
+
+
+        
+
+
+          /* Console log (number)*/
+
+        
+          input_num.addEventListener("change",function(){
+            if (is_playing == true){
+              console.log(input_num.value);
+            }
+          });
+
+        }
+
+      });
+
+
+      /*set / clear interval*/
+
+      
+    </script>
+    
+  </body>
+  
+</html>
